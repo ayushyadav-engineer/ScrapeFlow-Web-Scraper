@@ -1,0 +1,442 @@
+{% extends "base.html" %}
+
+{% block title %}
+Scraping History | Web Scraping & Data Extraction System
+{% endblock %}
+
+{% block content %}
+
+<!-- ==========================================
+     Hero Section
+========================================== -->
+
+<section class="hero-section">
+
+    <div class="glass-card hero-card">
+
+        <h1 class="hero-title text-gradient">
+
+            Scraping History
+
+        </h1>
+
+        <p class="hero-subtitle">
+
+            Browse, search and manage all previously
+            scraped websites stored in the MySQL database.
+
+        </p>
+
+    </div>
+
+</section>
+
+<!-- ==========================================
+     Search Card
+========================================== -->
+
+<section class="section-spacing">
+
+    <div class="glass-card">
+
+        <div class="card-body">
+
+            <form
+
+                action="{{ url_for('history.search') }}"
+
+                method="GET">
+
+                <div class="row g-3">
+
+                    <div class="col-lg-10">
+
+                        <input
+
+                            type="text"
+
+                            class="form-control"
+
+                            name="keyword"
+
+                            value="{{ keyword }}"
+
+                            placeholder="Search by Website URL or Title...">
+
+                    </div>
+
+                    <div class="col-lg-2">
+
+                        <button
+
+                            class="btn btn-gradient w-100"
+
+                            type="submit">
+
+                            <i class="bi bi-search me-2"></i>
+
+                            Search
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ==========================================
+     History Table
+========================================== -->
+
+<section class="section-spacing">
+
+    <div class="glass-card">
+
+        <div class="card-header">
+
+            <h4 class="mb-0">
+
+                <i class="bi bi-clock-history me-2"></i>
+
+                Scraped Websites
+
+            </h4>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive glass-table">
+
+                <table class="table premium-table align-middle mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Website</th>
+
+                            <th>Title</th>
+
+                            <th>Links</th>
+
+                            <th>Images</th>
+
+                            <th>Status</th>
+
+                            <th>Date</th>
+
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% if search_mode %}
+
+                        {% set records = results %}
+
+                    {% else %}
+
+                        {% set records = pagination.items %}
+
+                    {% endif %}
+
+                    {% if records %}
+
+                    {% for row in records %}
+
+                    <tr>
+
+                        <td>
+
+                            {{ row.id }}
+
+                        </td>
+
+                        <td>
+
+                            <a
+
+                                href="{{ row.website_url }}"
+
+                                target="_blank">
+
+                                {{ row.website_url }}
+
+                            </a>
+
+                        </td>
+
+                        <td>
+
+                            {{ row.title }}
+
+                        </td>
+
+                        <td>
+
+                            {{ row.total_links }}
+
+                        </td>
+
+                        <td>
+
+                            {{ row.total_images }}
+
+                        </td>
+
+                        <td>
+
+                            {% if row.status == "Success" %}
+
+                            <span class="badge bg-success">
+
+                                Success
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-danger">
+
+                                Failed
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {{ row.scraped_time.strftime("%d-%m-%Y %H:%M") }}
+
+                        </td>
+
+                        <td>
+
+                            <a
+
+                                href="{{ url_for('history.delete', record_id=row.id) }}"
+
+                                class="btn btn-delete"
+
+                                onclick="return confirm('Delete this record?')">
+
+                                <i class="bi bi-trash"></i>
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                    {% else %}
+                    <tr>
+
+    <td colspan="8">
+
+        <div class="empty-state">
+
+            <i class="bi bi-database-x"></i>
+
+            <h4>
+
+                No Scraping History Found
+
+            </h4>
+
+            <p class="text-muted">
+
+                No records are currently available in the database.
+                Scrape a website to start building your history.
+
+            </p>
+
+        </div>
+
+    </td>
+
+</tr>
+
+{% endif %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ==========================================
+     Pagination
+========================================== -->
+
+{% if not search_mode and pagination.pages > 1 %}
+
+<section class="section-spacing">
+
+    <nav>
+
+        <ul class="pagination justify-content-center">
+
+            {% if pagination.has_prev %}
+
+            <li class="page-item">
+
+                <a
+
+                    class="page-link"
+
+                    href="{{ url_for('history.history', page=pagination.prev_num) }}">
+
+                    <i class="bi bi-chevron-left"></i>
+
+                </a>
+
+            </li>
+
+            {% endif %}
+
+            {% for page in pagination.iter_pages() %}
+
+                {% if page %}
+
+                <li class="page-item {% if page==pagination.page %}active{% endif %}">
+
+                    <a
+
+                        class="page-link"
+
+                        href="{{ url_for('history.history', page=page) }}">
+
+                        {{ page }}
+
+                    </a>
+
+                </li>
+
+                {% endif %}
+
+            {% endfor %}
+
+            {% if pagination.has_next %}
+
+            <li class="page-item">
+
+                <a
+
+                    class="page-link"
+
+                    href="{{ url_for('history.history', page=pagination.next_num) }}">
+
+                    <i class="bi bi-chevron-right"></i>
+
+                </a>
+
+            </li>
+
+            {% endif %}
+
+        </ul>
+
+    </nav>
+
+</section>
+
+{% endif %}
+
+<!-- ==========================================
+     Summary Card
+========================================== -->
+
+<section class="section-spacing">
+
+    <div class="glass-card">
+
+        <div class="card-body">
+
+            <div class="row text-center">
+
+                <div class="col-lg-4 col-md-4">
+
+                    <i class="bi bi-globe2 display-5 text-primary floating-icon"></i>
+
+                    <h5 class="mt-3">
+
+                        Websites
+
+                    </h5>
+
+                    <p>
+
+                        Browse every website that has been scraped and stored.
+
+                    </p>
+
+                </div>
+
+                <div class="col-lg-4 col-md-4">
+
+                    <i class="bi bi-search display-5 text-success floating-icon"></i>
+
+                    <h5 class="mt-3">
+
+                        Search
+
+                    </h5>
+
+                    <p>
+
+                        Quickly locate records by title or website URL.
+
+                    </p>
+
+                </div>
+
+                <div class="col-lg-4 col-md-4">
+
+                    <i class="bi bi-trash display-5 text-danger floating-icon"></i>
+
+                    <h5 class="mt-3">
+
+                        Manage
+
+                    </h5>
+
+                    <p>
+
+                        Remove unwanted records whenever required.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
