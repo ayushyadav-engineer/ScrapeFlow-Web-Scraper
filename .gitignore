@@ -1,30 +1,49 @@
-# Virtual Environment
-.venv/
-
+# =========================
 # Python
+# =========================
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
 
-# Environment
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Environment Variables
 .env
-
-# Logs
-logs/
-*.log
-
-# Output Files
-output/
-
-# Database
-*.db
-*.sqlite3
 
 # IDE
 .vscode/
 .idea/
 
 # OS
-Thumbs.db
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log
+app/logs/*.log
+
+# Database
+*.db
+*.sqlite3
+
+# SQLAlchemy Cache
+*.db-journal
+
+# Python Cache
+.pytest_cache/
+.mypy_cache/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Output Files
+output/
+
+# Jupyter
+.ipynb_checkpoints/
