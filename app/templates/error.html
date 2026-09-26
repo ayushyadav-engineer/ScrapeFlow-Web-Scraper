@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Error · ScrapeFlow{% endblock %}
+{% block content %}
+<section class="auth-shell">
+  <div class="glass-card auth-card error-card">
+    <span class="error-mark" aria-hidden="true">!</span>
+    <p class="eyebrow">REQUEST ERROR</p>
+    <h1>Something went wrong</h1>
+    <p class="muted">We couldn't complete that request.</p>
+    <p class="reference">Reference ID: <code>{{ request_id }}</code></p>
+    <a class="primary-button linkbutton" href="{{ url_for('dashboard.index') if current_user.is_authenticated else url_for('auth.login') }}">Back to Dashboard</a>
+  </div>
+</section>
+{% endblock %}

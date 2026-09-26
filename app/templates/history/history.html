@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}History · ScrapeFlow{% endblock %}
+{% block content %}
+<section class="hero-row">
+  <div><p class="eyebrow">ARCHIVE</p><h1>Scrape History</h1><p class="muted">View and manage all your scraping jobs.</p></div>
+  <details class="export-dropdown">
+    <summary class="primary-button">↓ Export All Data</summary>
+    <div class="export-options" role="menu">
+      <a href="{{ url_for('history.export', fmt='csv') }}" role="menuitem">CSV</a>
+      <a href="{{ url_for('history.export', fmt='excel') }}" role="menuitem">Excel (.xlsx)</a>
+    </div>
+  </details>
+</section>
+<section class="glass-card panel">
+  <div class="table-scroll"><table><thead><tr><th>#</th><th>URL</th><th>STATUS</th><th>ITEMS</th><th>DURATION</th><th>DATE</th><th>DOWNLOAD</th></tr></thead>
+  <tbody>
+  {% for job in jobs %}
+    <tr><td>{{ job.id }}</td><td class="url-cell" title="{{ job.url }}">{{ job.url }}</td><td><span class="badge {{ job.status }}">{{ job.status|capitalize }}</span></td><td>{{ job.items_scraped }}</td><td>{{ job.duration_seconds }}s</td><td>{{ job.created_at.strftime('%Y-%m-%d %H:%M') }}</td><td><div class="button-row"><a class="mini-button" href="{{ url_for('history.export', fmt='csv') }}" aria-label="Download CSV for scrape {{ job.id }}">CSV</a><a class="mini-button" href="{{ url_for('history.export', fmt='excel') }}" aria-label="Download Excel for scrape {{ job.id }}">XLSX</a></div></td></tr>
+  {% else %}<tr><td colspan="7" class="empty">No history yet.</td></tr>{% endfor %}
+  </tbody></table></div>
+  <div class="pagination">
+    {% if page > 1 %}<a class="glass-button" href="{{ url_for('history.index', page=page-1) }}">← Previous</a>{% endif %}
+    <span>Page {{ page }}</span>
+    {% if has_next %}<a class="glass-button" href="{{ url_for('history.index', page=page+1) }}">Next →</a>{% endif %}
+  </div>
+  <p class="muted small export-note">Per-scrape export is not represented by the existing database schema, so these download controls safely export the authenticated user's available catalogue.</p>
+</section>
+{% endblock %}

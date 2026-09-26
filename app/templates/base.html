@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block title %}ScrapeFlow{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+  <div class="ambient ambient-a" aria-hidden="true"></div>
+  <div class="ambient ambient-b" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="{{ url_for('dashboard.index') if current_user.is_authenticated else url_for('auth.login') }}">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>SCRAPE<span class="brand-accent">FLOW</span></span>
+    </a>
+    {% if current_user.is_authenticated %}
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="nav-button" href="{{ url_for('dashboard.index') }}">Dashboard</a>
+      <a class="nav-button" href="{{ url_for('history.index') }}">History</a>
+      <a class="nav-button" href="{{ url_for('scraper.page') }}">New Scrape</a>
+      <form method="post" action="{{ url_for('auth.logout') }}" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="nav-button logout-button" type="submit">Logout</button>
+      </form>
+    </nav>
+    {% endif %}
+  </header>
+
+  <main class="page-shell">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack" aria-live="polite">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}New Scrape · ScrapeFlow{% endblock %}
+{% block content %}
+<section class="hero-row">
+  <div><p class="eyebrow">EXTRACTION ENGINE</p><h1>Start a New Scrape</h1><p class="muted">Enter the website URL and configure your scraping options.</p></div>
+</section>
+<section class="glass-card scrape-card">
+<form method="post" action="{{ url_for('scraper.run') }}" class="form-stack" id="scrapeForm">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label>Website URL<input type="url" name="url" maxlength="2048" placeholder="https://example.com" required autocomplete="url"></label>
+  <div class="slider-label"><span>Pages to crawl</span><output id="pagesValue">1 page</output></div>
+  <div class="slider-row">
+    <button class="step-button" type="button" data-step="-1" aria-label="Decrease pages">−</button>
+    <input id="pages" type="range" name="pages" min="1" max="{{ config.SCRAPER_MAX_PAGES }}" value="1" step="1" aria-label="Pages to crawl">
+    <button class="step-button" type="button" data-step="1" aria-label="Increase pages">+</button>
+  </div>
+  <div class="range-minmax"><span>1</span><span>{{ config.SCRAPER_MAX_PAGES }}</span></div>
+  <button class="primary-button large" type="submit">Start Scraping <span>→</span></button>
+</form>
+<div class="security-grid">
+  <div class="security-card"><strong>Safe &amp; Secure</strong><small>SSRF validation and isolated requests</small></div>
+  <div class="security-card"><strong>SSRF Protected</strong><small>Private and reserved networks blocked</small></div>
+  <div class="security-card"><strong>Smart Limits</strong><small>Response, page and item limits enforced</small></div>
+  <div class="security-card"><strong>Rate Limited</strong><small>IP and authenticated-user controls</small></div>
+</div>
+</section>
+{% endblock %}
